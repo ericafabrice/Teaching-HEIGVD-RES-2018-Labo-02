@@ -33,6 +33,10 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
   public void connect(String server, int port) throws IOException {
     //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
       socket = new Socket(server, port);
+       reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+
+         reader.readLine();
   }
 
   @Override
@@ -42,7 +46,7 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
     //send the BYE command to close the connection
        writer.println(RouletteV1Protocol.CMD_BYE);
        writer.flush();       
-       
+       reader.readLine();
        //close the objects that communicate with the server
         writer.close();
         reader.close();
@@ -59,6 +63,7 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
   public void loadStudent(String fullname) throws IOException {
     //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
          writer.println(RouletteV1Protocol.CMD_LOAD);
+         writer.flush();
          reader.readLine();
          writer.println(fullname);
          writer.println(RouletteV1Protocol.CMD_LOAD_ENDOFDATA_MARKER);
@@ -113,7 +118,5 @@ public class RouletteV1ClientImpl implements IRouletteV1Client {
     InfoCommandResponse response = JsonObjectMapper.parseJson(reader.readLine(), InfoCommandResponse.class);
      return response.getProtocolVersion();
   }
-
-
 
 }
